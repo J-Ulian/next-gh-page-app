@@ -1,4 +1,4 @@
-# gh-pages NextJs blog app
+# gh-pages Next.js blog app
 
 Deploy is available at: [https://j-ulian.github.io/next-gh-page-app/](https://j-ulian.github.io/next-gh-page-app/)
 

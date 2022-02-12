@@ -1,13 +1,17 @@
-import { Box, Text, Link, Code } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
+import Head from 'next/head';
+import { GetStaticProps } from 'next';
 
 import { getAllPosts, PostMeta } from '@src/api';
-
 import { Logo } from '../src/components/Logo';
 import { PostsList } from '@src/components/PostsList';
 
 export default function Home({ meta }: { meta: PostMeta[] }) {
   return (
     <>
+      <Head>
+        <title>Blog Posts</title>
+      </Head>
       <Box>
         <Logo h="33vmin" pointerEvents="none" />
       </Box>
@@ -17,10 +21,10 @@ export default function Home({ meta }: { meta: PostMeta[] }) {
   );
 }
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const meta = getAllPosts()
     .slice(0, 9)
     .map(post => post.meta);
 
   return { props: { meta } };
-}
+};
