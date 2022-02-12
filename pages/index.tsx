@@ -1,7 +1,6 @@
 import { Box, Text, Link, Code } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
-// 2. Then use it like this
 import { Logo } from '../src/components/Logo';
 
 export default function Home() {

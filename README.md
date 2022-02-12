@@ -1,6 +1,6 @@
-# gh-pages Hello World example
+# gh-pages NextJs blog app
 
-This example shows the most basic idea behind Next. We have 2 pages: `pages/index.js` and `pages/about.js`. The former responds to `/` requests and the latter to `/about`. Using `next/link` you can add hyperlinks between them with universal routing capabilities.
+<!-- This example shows the most basic idea behind Next. We have 2 pages: `pages/index.js` and `pages/about.js`. The former responds to `/` requests and the latter to `/about`. Using `next/link` you can add hyperlinks between them with universal routing capabilities.
 
 ## How to use
 
@@ -40,4 +40,4 @@ Example:
 https://github.com/thierryc/Next-gh-page-example/
 
 https://thierryc.github.io/Next-gh-page-example/
-```
+``` -->
