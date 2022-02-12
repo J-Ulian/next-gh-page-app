@@ -1,21 +1,26 @@
 import { Box, Text, Link, Code } from '@chakra-ui/react';
-import NextLink from 'next/link';
+
+import { getAllPosts, PostMeta } from '@src/api';
 
 import { Logo } from '../src/components/Logo';
+import { PostsList } from '@src/components/PostsList';
 
-export default function Home() {
+export default function Home({ meta }: { meta: PostMeta[] }) {
   return (
-    <Box>
-      <Logo h="40vmin" pointerEvents="none" />
-      <Text>
-        <Code fontSize="xl"> Hello World. </Code>{' '}
-        <NextLink href="/about" as={process.env.BACKEND_URL + '/about'} passHref>
-          <Link color="teal.500" fontSize="2xl">
-            About
-          </Link>
-        </NextLink>
-        .
-      </Text>
-    </Box>
+    <>
+      <Box>
+        <Logo h="33vmin" pointerEvents="none" />
+      </Box>
+      <Text fontSize="4xl">Posts:</Text>
+      <PostsList meta={meta} />
+    </>
   );
+}
+
+export async function getStaticProps() {
+  const meta = getAllPosts()
+    .slice(0, 9)
+    .map(post => post.meta);
+
+  return { props: { meta } };
 }
