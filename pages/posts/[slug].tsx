@@ -1,5 +1,5 @@
 import type { GetStaticProps, GetStaticPaths } from 'next';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Head from 'next/head';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Box, Text } from '@chakra-ui/react';
@@ -27,7 +27,10 @@ export default function PostPage({ post }: { post: MDXPost }) {
           {post.meta.title}
         </Text>
         <Text textAlign={'start'} maxWidth="min(80vw, 800px)">
-          <MDXRemote {...post.source} components={{ Image }} />
+          <MDXRemote
+            {...post.source}
+            // components={{ Image }}
+          />
         </Text>
       </Box>
     </>
