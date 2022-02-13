@@ -12,7 +12,7 @@ interface PostsListProps {
 
 export const PostsList: React.FC<PostsListProps> = ({ meta }) => {
   return (
-    <List textAlign={'start'} spacing={3}>
+    <List maxWidth="min(80vw, 800px)" textAlign={'start'} spacing={6}>
       {meta.map(post => (
         <ListItem key={post.slug}>
           <NextLink href={`/posts/${post.slug}`} as={`${process.env.BACKEND_URL}/posts/${post.slug}`} passHref>
@@ -20,7 +20,7 @@ export const PostsList: React.FC<PostsListProps> = ({ meta }) => {
               {post.title}
             </Link>
           </NextLink>
-          <Text>{post.excerpt}</Text>
+          <Text mt={1}>{post.excerpt}</Text>
           <HStack mt={2} spacing={4}>
             {post.tags.map((tag, idx) => (
               <NextLink key={idx} href={`/tags/${tag}`} as={`${process.env.BACKEND_URL}/tags/${tag}`} passHref>

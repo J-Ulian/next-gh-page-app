@@ -1,0 +1,315 @@
+---
+title: Обзор React Location и сравнение с React Router
+tags:
+  - react
+  - javascript
+  - react-location
+  - react-router-dom
+date: 2022-02-13
+excerpt: React Location это 'ещё одна' библиотека для маршрутизации в React, из коробки включающая в себя любопытный функционал
+---
+
+<Link color="teal.500" href="https://react-location.tanstack.com" isExternal>
+  React Location
+</Link> - это библиотека разработанная <Link color="teal.500" href="https://tanstack.com" isExternal>
+  TanStack
+</Link> для client-side имплементации маршрутизации. Изначально она была представлена в качестве расширения для бета-версии
+React Router v6. Но теперь React Location это полноценная альтернатива для библиотеки React Router и она предоставляет сет
+уникальных функций, таких как:
+
+- Загрузчики данных (Data loaders)
+- API для параметров поиска (searchParams)
+- Вложенная маршрутизация
+- Разделение кода (Code-splitting)
+
+<YouTube id="rLY65AQreSU" />
+
+## Основы работы с React Location
+
+Если вы ранее использовали React Router, работа с React Location будет ощущаться крайне схоже. Далее можно прочитать краткий обзор базовых фич React Location.
+
+### 1. Компонент Router
+
+React Location предоставляет компонент Router в качестве корневого провайдера для экземпляра ReactLocation. Он отвечает за обработку всех конфигураций маршрутизации вашего приложения.
+
+```jsx
+import { ReactLocation, Router } from 'react-location';
+const reactLocation = new ReactLocation();
+return (
+  <Router
+    location={reactLocation}
+    routes={[
+      {
+        path: '/',
+        element: <Home />,
+      },
+    ]}
+  />
+);
+```
+
+В приведенном выше примере показано, как использовать компонент Router без каких-либо дочерних пропов. Однако, если вы хотите использовать дочерние пропы, вам необходимо добавить компонент Outlet.
+
+```jsx
+import { ReactLocation, Router } from 'react-location';
+const reactLocation = new ReactLocation();
+return (
+  <Router
+    location={reactLocation}
+    routes={[
+      {
+        path: '/',
+        element: <Home />,
+      },
+    ]}
+  >
+    <div>Header</div>
+    <Outlet />
+  </Router>
+);
+```
+
+### 2. Маршруты в React Location
+
+Маршруты в React Location это массив с объектами, и каждый объект может содержать маршруты в качестве дочерних массивов. Однако есть несколько правил, которым необходимо следовать при описании маршрутов в React Location:
+
+- Маршруты сопоставляются в указанном порядке
+- Если вы не определяете путь к маршруту, путь по умолчанию будет path: \*
+- Если вы не определяете элемент для маршрута, элементом по умолчанию будет Outlet
+- Если индексные маршруты (/) не имеют дочерних элементов, они будут считаться точными (exact)
+
+```js
+const routes: Route[] = [
+  {
+    path: 'articles',
+    children: [
+      {
+        path: '/',
+        element: <Articles />,
+      },
+      {
+        path: 'new',
+        element: <NewArticle />,
+      },
+      {
+        path: ':articleId',
+        element: <Article />,
+      },
+      {
+        element: `Render as the fallback when 'articles/' or '/articles/new' are not matched`,
+      },
+    ],
+  },
+];
+```
+
+Кроме этого, React Location поддерживает разделение кода и асинхронную загрузку данных по маршрутами.
+
+Приведенный ниже фрагмент кода показывает, как использовать React Location для фетчинга данных статьи с использованием параметров маршрута.
+
+```js
+const routes: Route[] = [
+  ...{
+    path: 'articles',
+    children: [
+      {
+        path: 'new',
+        element: <NewArticle />,
+      },
+      {
+        path: ':articleId',
+        element: <Article />,
+        load: async ({ params }) => ({
+          article: await getArticlesById(params.articleId),
+        }),
+      },
+    ],
+  },
+];
+```
+
+Вы можете найти дополнительную информацию о разделении кода и асинхронной загрузке данных в <Link color="teal.500" href="https://react-location.tanstack.com/docs/api#defining-routes" isExternal>
+документации</Link>.
+
+### 3. Внутренняя навигация с использованием React Location
+
+React Location предоставляет компонент Link для внутренней навигации.
+
+Link беспроблемно работает с такими функциями браузера, как "открыть в новой вкладке", "ctrl + левый клик" и "открыть в новом окне". Кроме того, используя компонент Link вы можете обновлять имена путей, параметры поиска и хэши.
+
+```jsx
+function App() {
+  return (
+    <div>
+      // Navigate to /home
+      <Link to="/home"> Home </Link>
+      // Navigate to /articles relative to the current location
+      <Link to="articles"> Articles </Link>
+      // Updates the hash to new-hash at the current location
+      <Link to="." hash="new-hash">
+        {' '}
+        Update Hash{' '}
+      </Link> <Link to="/search" search={{ q: 'ReactLocation' }}>
+        // I will navigate to /search?q=ReactLocation{' '}
+      </Link>
+      // Add addThis=New Article and also remove the removeThis param to/from the search params on the current page
+      <Link
+        search={({ removeThis, ...rest }) => ({
+          ...rest,
+          addThis: 'New Article',
+        })}
+      >
+        {' '}
+      </Link>{' '}
+    </div>
+  );
+}
+```
+
+### 4. Использование хуков React Location
+
+React Location предоставляет набор хуков для простого управления маршрутами. Итак, давайте посмотрим, каковы их функциональные возможности и как мы можем их использовать.
+
+#### useMatch and useMatches
+
+При помощи хуков useMatch и useMatches можно получить доступ к данным маршрута, параметрам и следующему дочернему совпадению в маршруте.
+
+Единственное различие между ними заключается в том, что useMatch возвращает только первое совпадение, в то время как useMatches возвращает все совпадения маршрута в контексте.
+
+```jsx
+function App(){
+  return(
+    const routes: Route[] = [
+     {
+       path: 'articles',
+       children: [
+         {
+           path: ':articleId',
+           element: <Article />,
+           load: async ({ params }) => ({
+             article: await getArticleeById(params.articleId),
+           }),
+         },
+       ],
+     },
+   ]
+  )
+}
+
+// Accesing route data
+function Article() {
+  const {
+    data: {
+      article,
+    },
+  } = useMatch()
+}
+
+// Accesing route params
+function Article() {
+  const {
+     params: { articleId },
+   } = useMatch()
+}
+```
+
+#### useNavigate
+
+Хук useNavigate позволяет программно перемещаться по вашему приложению.
+
+```jsx
+function Article() {
+  const navigate = useNavigate();
+
+  const onClick = () => {
+    navigate({ to: './articles', replace: true });
+  };
+
+  return <button onClick={onClick}>View More</button>;
+}
+```
+
+#### usePrompt
+
+usePrompt можно использовать для создания диалоговых окон. Он принимает 2 входящих параметра: message и when:
+
+- message — Строка, которая отображается в виде сообщения.
+- when — определяет условие отображения.
+
+```js
+export function usePrompt(
+   message: string,
+   when: boolean | any
+): void
+```
+
+В дополнение к вышеописанным 4 основным хукам, React Location поддерживает еще 4: useSearch, useMatchRoute, useRouter и useResolvePath. Более подробную информацию о них вы можете найти в <Link color="teal.500" href="https://react-location.tanstack.com/docs/api#usesearch" isExternal>
+документации</Link>.
+
+### 5. Плагины для React Location
+
+Поскольку React Location является относительно новой библиотекой, некоторые ее функции все еще находятся в стадии разработки. Тем не менее мы можем использовать несколько сторонних плагинов, чтобы заполнить эти пробелы.
+
+#### Приоритезация маршрутов
+
+Приоритезация может быть действительной полезной, чтобы избежать путаницы в выборе маршрутов. С React Location мы можем использовать сторонний плагин под названием react-location-rank-routes и реализовать эту функцию.
+
+```js
+// NPM
+npm i react-location-rank-routes
+// Yarn
+yarn add react-location-rank-routes
+// Usage
+<Router
+   location={location}
+   filterRoutes={rankRoutes}
+   routes={[
+      ...
+   ]}
+/>
+```
+
+#### Кэширование для загрузчиков (Loaders)
+
+Ранее я уже упоминал, что мы можем использовать React Location для асинхронной загрузки данных с API. Так же React Location поддерживает плагин react-location-simple-cache, который можно использовать при создания кэша для этих самых загрузчиков.
+
+```js
+// NPM
+npm i react-location-simple-cache
+// Rarn
+yarn add react-location-simple-cache
+// Usage
+import { ReactLocationSimpleCache } from 'react-location-simple-cache'
+<Router
+   {
+      path: ':articleId',
+      element: <Article />,
+      loader: routeCache.createLoader( async ({ params }) => ({
+         article: await getArticlesById(params.articleId),
+      })),
+   }
+/>
+```
+
+Кроме того, библиотека react-location-simple-cache предоставляет набор функций для чтения, поиска и очистки кэшированных элементов.
+
+- cache.clearAll — Очищает кэш
+- cache.find — Возвращает первый соответствующий элемент
+- cache.invalidate — Инвалидирует элементы кэша
+- cache.filter — Фильтрует и возвращает соответствующие элементы
+
+В дополнение к этим 2 плагинам, существуют и многие другие плагины, такие как react-location-jsurl и react-location-elements-to-routes, которые могут улучшить ваш developer experience.
+
+### React Location vs React Router
+
+React Location представляет из себя достойную альтернативу для React Router. У обеих библиотек есть свои преимущества и недостатки, основные из которых вы можете увидеть на последующей иллюстрации.
+
+<Image src="/images/location_vs_router.png" width={1703} height={980} />
+
+### Заключение
+
+React Location сравнительно молодая библиотека и некоторые функции все еще находятся в стадии разработки. Но команда React Location смогла сократить разрыв с React Router, внедрив поддержку сторонних плагинов.
+
+Кроме того, React Location имеет интересный набор функций, связанных с асинхронной маршрутизацией и загрузчиками данных.
+
+Попробуйте React Location при написании вашего следующего проекта и поделитесь своими мыслями.
