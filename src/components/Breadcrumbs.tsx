@@ -5,7 +5,7 @@ export const Breadcrumbs: React.FC = ({}) => {
   return (
     <Breadcrumb position={'absolute'}>
       <BreadcrumbItem>
-        <BreadcrumbLink as={Link} href="/">
+        <BreadcrumbLink as={Link} href={process.env.BACKEND_URL + '/'}>
           Home
         </BreadcrumbLink>
       </BreadcrumbItem>
